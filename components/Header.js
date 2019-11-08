@@ -5,12 +5,12 @@ import { Row, Col, Menu, Icon } from 'antd'
 const Header = () => (
     <div className='header'>
         <Row type='flex' justify='center'>
-            <Col xs={24} sm={24} md={10} lg={10} xl={10} className='left'>
+            <Col xs={24} sm={24} md={10} lg={15} xl={12} className='left'>
                 <span className='header-logo'>SmartHui</span>
-                <span className='header-txt'>Good good Study, Day day up</span>
+                <span className='header-txt'>Good Good Study, Day Day Up</span>
             </Col>
 
-            <Col xs={24} sm={24} md={14} lg={8} xl={6}>
+            <Col xs={0} sm={0} md={14} lg={8} xl={6}>
                 <Menu mode='horizontal'>
                     <Menu.Item key='home'>
                         <Icon type='home' />

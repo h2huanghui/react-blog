@@ -1,50 +1,40 @@
 import React from 'react'
 import Head from 'next/head'
 import { Row, Col, Icon, Breadcrumb, Affix } from 'antd'
+import axios from 'axios'
 import Header from '../components/Header'
 import Author from '../components/Author'
 import Advert from '../components/Advert'
 import Footer from '../components/Footer'
+
+import marked from 'marked' 
+import hljs from 'highlight.js'
+import 'highlight.js/styles/monokai-sublime.css'
+
 import ReactMarkdown from 'react-markdown'
 import MarkNav from 'markdown-navbar'
 import 'markdown-navbar/dist/navbar.css'
 import '../static/style/components/detail.css'
 
-const Detail = () => {
-  let markdown = '# P01:课程介绍和环境搭建\n' +
-    '[ **M** ] arkdown + E [ **ditor** ] = **Mditor**  \n' +
-    '> Mditor 是一个简洁、易于集成、方便扩展、期望舒服的编写 markdown 的编辑器，仅此而已... \n\n' +
-    '**这是加粗的文字**\n\n' +
-    '*这是倾斜的文字*`\n\n' +
-    '***这是斜体加粗的文字***\n\n' +
-    '~~这是加删除线的文字~~ \n\n' +
-    '\`console.log(111)\` \n\n' +
-    '# p02:来个Hello World 初始Vue3.0\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n' +
-    '***\n\n\n' +
-    '# p03:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '# p04:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '#5 p05:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '# p06:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '# p07:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '``` var a=11; ```'
+const Detail = (props) => {
+  const renderer = new marked.Renderer()
+
+  marked.setOptions({
+    renderer: renderer, //必须填写
+    gfm: true, //启动类似Gitgub样式的Markdown
+    pedantic: false,//只解析符合Markdown定义的,不修正Markdown错误
+    sanitize: false, //原始输出,忽略HTML标签
+    tables: true,//支持Github形式的表格
+    breaks: false,//支持Github换行符,必须打开gmf选项
+    smartLists: true,//优化列表输出
+    highlight: function (code) {
+      return hljs.highlightAuto(code).value
+    }
+  })
+
+  let html = marked(props.article_content)
+
+ 
   return (
     <>
       <Head>
@@ -69,11 +59,9 @@ const Detail = () => {
             <span><Icon type="fire" /> 2019-11-06</span>
           </div>
 
-          <div className='detail-content'>
-            <ReactMarkdown
-              source={markdown}
-              escapeHtml={false}
-            />
+          <div className='detail-content'
+            dangerouslySetInnerHTML={{__html:html}}
+          >
           </div>
 
         </Col>
@@ -86,7 +74,7 @@ const Detail = () => {
               <div className="nav-title">文章目录</div>
               <MarkNav
                 className='article-menu'
-                source={markdown}
+                source={html}
                 ordered={false}
               />
             </div>
@@ -97,6 +85,18 @@ const Detail = () => {
     </>
 
   )
+}
+
+Detail.getInitialProps = async (context) => {
+  // console.log(context.query.id)
+  let id = context.query.id
+  const promise = new Promise(resolve => {
+    axios(`http://localhost:7001/default/getArticleById/${id}`).then(res => {
+      console.log(res.data.data[0])
+      resolve(res.data.data[0])
+    })
+  })
+  return await promise
 }
 
 

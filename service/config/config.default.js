@@ -43,6 +43,7 @@ module.exports = appInfo => {
     agent: false,
   };
   config.security = {
+    //egg提供的一种安全机制
     csrf: {
       enable: false
     },
@@ -51,7 +52,7 @@ module.exports = appInfo => {
 
   config.cors = {
     origin: '*', //所有域名均可跨域访问
-    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS'
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS'//请求方式
   }
 
   return {

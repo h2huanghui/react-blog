@@ -27,3 +27,6 @@
 .article-menu {
     font-size: .5rem;
 }
+img {
+    max-width: 100%;
+}

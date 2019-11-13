@@ -7,34 +7,46 @@ import Author from '../components/Author'
 import Advert from '../components/Advert'
 import Footer from '../components/Footer'
 
-import marked from 'marked' 
+import marked from 'marked'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/monokai-sublime.css'
+
+import Tocify from '../components/tocify.tsx'
 
 import ReactMarkdown from 'react-markdown'
 import MarkNav from 'markdown-navbar'
 import 'markdown-navbar/dist/navbar.css'
 import '../static/style/components/detail.css'
 
+import servicePath from '../config/api'
+
 const Detail = (props) => {
+  const tocify = new Tocify()
   const renderer = new marked.Renderer()
+
+  // ###(level) hh(text)
+  renderer.heading = function (text, level, raw) {
+    const anchor = tocify.add(text, level)
+    return `<a href="#${anchor}" id="${anchor}" class="anchor-fix">
+      <h${level}>${text}</h${level}>
+    </a>`
+  }
 
   marked.setOptions({
     renderer: renderer, //必须填写
     gfm: true, //启动类似Gitgub样式的Markdown
-    pedantic: false,//只解析符合Markdown定义的,不修正Markdown错误
-    sanitize: false, //原始输出,忽略HTML标签
+    pedantic: false,//只解析符合Markdown定义的,不修正Markdown错误(false代表容错)
+    sanitize: false, //原始输出,忽略HTML标签(不忽略)
     tables: true,//支持Github形式的表格
     breaks: false,//支持Github换行符,必须打开gmf选项
     smartLists: true,//优化列表输出
     highlight: function (code) {
-      return hljs.highlightAuto(code).value
+      return hljs.highlightAuto(code).value //自动检测返回
     }
   })
 
-  let html = marked(props.article_content)
+  let html = marked(props.article_content) //用marked
 
- 
   return (
     <>
       <Head>
@@ -60,9 +72,10 @@ const Detail = (props) => {
           </div>
 
           <div className='detail-content'
-            dangerouslySetInnerHTML={{__html:html}}
+            dangerouslySetInnerHTML={{ __html: html }}
           >
           </div>
+
 
         </Col>
 
@@ -72,11 +85,16 @@ const Detail = (props) => {
           <Affix>
             <div className='detail-nav'>
               <div className="nav-title">文章目录</div>
-              <MarkNav
-                className='article-menu'
-                source={html}
+
+              {/* <MarkNav
+                className="article-menu"
+                source={props.article_content}
                 ordered={false}
-              />
+              /> */}
+              <div className="toc-list">
+                {tocify && tocify.render()}
+              </div>
+
             </div>
           </Affix>
         </Col>
@@ -90,8 +108,9 @@ const Detail = (props) => {
 Detail.getInitialProps = async (context) => {
   // console.log(context.query.id)
   let id = context.query.id
+  let url = servicePath.getArticleById
   const promise = new Promise(resolve => {
-    axios(`http://localhost:7001/default/getArticleById/${id}`).then(res => {
+    axios(`${url}${id}`).then(res => {
       console.log(res.data.data[0])
       resolve(res.data.data[0])
     })

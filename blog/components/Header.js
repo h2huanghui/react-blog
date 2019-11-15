@@ -9,8 +9,9 @@ const Header = () => {
     const [navArray, setNavArray] = useState([])
     //useEffect(异步)第一个参数是一个函数,第二个参数为空表示只执行一次。如果第二个参数为[navArray],则表示navArray变化时执行
     useEffect(() => {
-        //声明fetchData变量(也就是一个方法),方法里面异步
+        //声明fetchData变量(也就是一个异步方法)
         const fetchData = async () => {
+            //await的是一个promise对象,造成fetchData异步函数停止执行并且等待promise的解决
             const result = await axios(servicePath.getTypeInfo).then((res) => {
                 return res.data.data
             })

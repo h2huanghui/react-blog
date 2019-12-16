@@ -1,4 +1,4 @@
-let ipUrl = 'http://localhost:7002/default/' //前台
+let ipUrl = 'http://localhost:7001/default/' //前台
 
 let servicePath = {
     getArticleList: `${ipUrl}getArticleList`, //首页文章列表接口

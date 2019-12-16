@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Card, Icon, Input, Button, Spin } from 'antd'
+import { Card, Icon, Input, Button, Spin, message } from 'antd'
 import servicePath from '../config/api'
 import axios from 'axios'
 
@@ -13,19 +13,40 @@ function Login(props) {
 
     const handleClick = () => {
         setIsLoading(true)
-        axios.post(servicePath.login, {
-            userName,
-            password
-        }).then((res) => {
-            if (res.data.code === 200) {
-                console.log(res.data.data)
+        if (!userName) {
+            message.error('用户名不能为空')
+            setTimeout(() => {
                 setIsLoading(false)
+            })
+            return false
+        } else if (!password) {
+            message.error('密码不能为空') 
+            setTimeout(() => {
+                setIsLoading(false)
+            })
+            return false
+        }
+
+        let dataProps = {
+            'userName': userName,
+            'password':password
+        }
+        axios({
+            method: 'post',
+            url: servicePath.login,
+            data: dataProps,
+            withCredentials: true //前端后端公用session,跨域检验cookie
+        }).then(res => {
+            setIsLoading(false)
+            if (res.data.code === '200') {
+                localStorage.setItem('openId',res.data.openId)
                 //路由跳转
-                props.history.push('/home')
+                props.history.push('/index')
             } else {
-                console.log('error')
+                message.error('用户名密码错误')
             }
         })
+
     }
 
     return (
@@ -41,7 +62,7 @@ function Login(props) {
                     />
                     <br />
                     <br />
-                    <Input
+                    <Input.Password
                         id='password'
                         placeholder='please enter password'
                         size='large'

@@ -1,3 +1,6 @@
+# 使用技术如下:
+React 16,Redux,React Router,React Hooks,Next.js, egg.js 
+
 ## 支持Markdown语法
 `npm i --save react-markdown`
 
@@ -21,4 +24,13 @@ default - 客户端使用的所有API接口
 ### 配置路由(前后端分离)
 router->admin.js
 router->default.js
+
+
+## 1. 接口
+## 2. 路由
+## 2.1 中间件
+## 3. 后台配置API (优点：配置统一管理,上线可以直接修改真实接口地址)
+## 4. 后台页面
+
+
 

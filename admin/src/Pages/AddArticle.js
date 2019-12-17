@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import marked from 'marked'
+import servicePath from '../config/api'
+import axios from 'axios'
 import '../static/css/AddArticle.css'
 import { Row, Col, Input, Select, Button, DatePicker } from 'antd'
 
 const { Option } = Select
 const { TextArea } = Input
 
-function AddArticle() {
+function AddArticle(props) {
     const [articleId, setArticleId] = useState(0) //文章ID,0:新增;非0:修改
     const [articleTitle, setArticleTitle] = useState('') //文章标题
     const [articleContent, setArticleContent] = useState('') //markdown的编辑内容
@@ -16,7 +18,11 @@ function AddArticle() {
     const [showDate, setShowDate] = useState() //发布日期
     const [updateDate, setUpdateDate] = useState() //修改日志的日期
     const [typeInfo, setTypeInfo] = useState([]) //文章类别信息
-    const [selectedType, setSelectType] = useState(1) //选择的文章类别
+    const [selectedType, setSelectType] = useState('请选择') //选择的文章类别
+
+    useEffect(() => {
+        getTypeInfo()
+    },[])
     
     marked.setOptions({
         renderer: marked.Renderer(),
@@ -41,6 +47,21 @@ function AddArticle() {
         setIntroducehtml(html)
     }
 
+    const getTypeInfo = () => {
+        axios({
+            method: 'get',
+            url:servicePath.getTypeInfo,
+            withCredentials:true
+        }).then(res => {
+            if (res.data.data == '未登录') {
+                localStorage.removeItem('openId')
+                props.history.push('/')
+            } else {
+                setTypeInfo(res.data.data) //react hooks设置值
+            }
+        })
+    }
+
     return (
         <div>
             <Row gutter={5}>
@@ -54,8 +75,14 @@ function AddArticle() {
                         </Col>
 
                         <Col span={4}>
-                            <Select defaultValue='1' size='large'>
-                                <Option value='1'>视频教程</Option>
+                            <Select defaultValue={selectedType} size='large'>
+                                {
+                                    typeInfo.map((item,index) => {
+                                        return (
+                                            <Option key={index} value={item.id}>{item.typeName}</Option>
+                                        )
+                                    })
+                                }
                             </Select>
                         </Col>
                     </Row>
